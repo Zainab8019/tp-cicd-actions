@@ -1,27 +1,31 @@
 name: CI - Build & Test
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_call:
+    secrets: 
+      SLACK_WEBHOOK:
+        required: false
   schedule:
-    - cron: '0 2 * * *' 
-    
+    - cron: '0 2 * * *' # Tous les jours à 02h00 UTC
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 jobs:
   lint-and-test:
+    env: # Passer le secret SLACK_WEBHOOK à ce job pour qu'il puisse l'utiliser dans les étapes de notification
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}-${{ matrix.node-version }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
-    concurrency:
-      group: ci-${{ github.ref }}
-      cancel-in-progress: true
 
     strategy:
       matrix:
         node-version: [18, 20, 22]
-
     steps:
       - name: Checkout du code
         uses: actions/checkout@v4
@@ -48,3 +52,15 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 7
+
+        # Étape de notification Slack, mais seulement pour Node.js 22 et si le webhook est configuré
+      - name: Notifier Slack
+        if: always() && matrix.node-version == 22 && env.SLACK_WEBHOOK != ''
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "CI ${{ job.status }} sur ${{ github.ref }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK }}
