@@ -1,13 +1,12 @@
 export default [
   {
-    files: ["src/**/*.js"],
-    languageOptions: {
-      ecmaVersion: 2021,
-      sourceType: "commonjs",
-    },
+    files: ['src/**/*.js'],
     rules: {
-      semi: ["error", "always"],
-      quotes: ["error", "single"],
+      'no-unused-vars': 'warn',
+      'no-console': 'warn',
+      'eqeqeq': 'error',
+      'no-var': 'error',
+      'prefer-const': 'warn',
     },
   },
 ];
