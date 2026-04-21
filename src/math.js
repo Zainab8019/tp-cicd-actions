@@ -1,6 +1,5 @@
 function add(a, b) {
-  var result = a + b; //erreur ajoutee
-  return result;
+  return a + b;
 }
 
 function multiply(a, b) {
