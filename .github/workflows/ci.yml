@@ -7,7 +7,7 @@ on:
     branches: [ main ]
   workflow_call:
   schedule:
-    - cron: '0 2 * * *' # Tous les jours à 02h00 UTC
+    - cron: '0 2 * * *' 
 
 jobs:
   lint-and-test:
@@ -50,6 +50,7 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 7
+
 
       - name: Notifier Slack
         if: always()
