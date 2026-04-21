@@ -14,15 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
-
   deploy:
-    needs: ci
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout
@@ -36,6 +29,5 @@ jobs:
         with:
           path: public/
 
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - name: Deploy
         uses: actions/deploy-pages@v4
